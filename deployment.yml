@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        args:
+          - "--ignore-db-dir=lost+found"
+        env:
+        - name: MYSQL_ROOT_PASSWORD    #nome da variavel da imagem
+          valueFrom:
+						secretKeyRef:
+						  name: my-secret          #nome do serviço secret criado
+							key: ROOT_PASSWORD       #variavel no secret que contem a chave que queremos
+        - name: MYSQL_DATABASE
+          valueFrom:
+					  secretKeyRef:
+						  name: my-secret          #nome do serviço secret criado
+							key: MYSQL_DATABASE      #variavel no secret que contem a chave que queremos
+
+        #sempre baixa a imagem a cada execucao
+        #imagePullPolicy: Always           
+        ports:
+        - containerPort: 3306
+          name: mysql
+
+        volumeMounts:
+        - name: local
+          mountPath: /var/lib/mysql
+
+        volumeMounts:
+        - name: script
+          mountPath: /docker-entrypoint-initdb.d
+
+      initContainers:
+      - name: git-cloner
+        image: alpine/git
+        args:
+          - clone
+          - --single-branch
+          - --
+          - https://github.com/andersonluix/script-tabela-teste.git
+          - /data
+        volumeMounts:
+        - mountPath: /data
+          name: script
+      
+      volumes:
+      - name: script
+        emptyDir: {}
+        
+      - name: local
+        persistentVolumeClaim:
+          claimName: pvc-fileserver-nfs
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-backend
+  labels:
+    app: app-backend
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: app-backend
+  template:
+    metadata:
+      labels:
+        app: app-backend
+    spec:
+      containers:
+      - image: andersonlbsilva/projetok8-app-cicd-dio:1.0
+        name: app-backend
+        #sempre baixa a imagem a cada execucao
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

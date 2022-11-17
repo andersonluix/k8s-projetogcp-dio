@@ -30,15 +30,11 @@ jobs:
     name: Deploy to GCP 
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: muda permissao
-        run: |  
-          echo ${{ secrets.SSH_KEY }} > ssh_key.pem
-          chmod 400 ssh_key.pem
-      - name: deploy to gcp
-        run: ssh -o StrictHostKeyChecking=no -i ssh_key.pem gcp@${{ secrets.SSH_SERVER }} "sudo rm -Rf ./k8s-projetogcp-dio/ && sudo git clone https://github.com/andersonluix/k8s-projetogcp-dio.git && cd k8s-projetogcp-dio && sudo chmod +x ./script.sh && ./script.sh"
-
-
-    #   - name: Push image
-    #     run: docker push ${{ secrets.DOCKER_USER }}/meu-custom-nginx
+      - name: Executa o ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_SERVER }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+                    sudo rm -Rf ./k8s-projetogcp-dio/ && sudo git clone https://github.com/andersonluix/k8s-projetogcp-dio.git && cd k8s-projetogcp-dio && sudo chmod +x ./script.sh && ./script.sh

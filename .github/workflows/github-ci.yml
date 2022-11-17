@@ -25,4 +25,20 @@ jobs:
           context: backend/
           push: true
           tags: ${{ secrets.USER }}/app-cicd-dio:1.0
+    
+  deploy_gcp:
+    name: Deploy to GCP 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: muda permissao
+        run: |
+          chmod 400 ${{ secrets.SSH_KEY }}
 
+      - name: deploy to gcp
+        run: ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY }} gcp@${{ secrets.SSH_SERVER }} "sudo rm -Rf ./k8s-projetogcp-dio/ && sudo git clone https://github.com/andersonluix/k8s-projetogcp-dio.git && cd k8s-projetogcp-dio && sudo chmod +x ./script.sh && ./script.sh"
+
+
+    #   - name: Push image
+    #     run: docker push ${{ secrets.DOCKER_USER }}/meu-custom-nginx

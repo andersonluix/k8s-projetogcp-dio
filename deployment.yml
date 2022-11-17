@@ -82,7 +82,7 @@ spec:
         app: app-backend
     spec:
       containers:
-      - image: andersonlbsilva/projetok8-app-cicd-dio:1.0
+      - image: andersonlbsilva/app-cicd-dio:1.0
         name: app-backend
         #sempre baixa a imagem a cada execucao
         imagePullPolicy: Always

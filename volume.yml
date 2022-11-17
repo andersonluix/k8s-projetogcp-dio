@@ -10,7 +10,7 @@ spec:
     - ReadWriteMany
   nfs:               
     path: /database     #Nome do compartilhamento de arquivos(filestore)
-		server: 10.58.162.178 #ip do filestore ou do servidor NFS
+    server: 10.58.162.178 #ip do filestore ou do servidor NFS
 
 ---
 

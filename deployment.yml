@@ -19,14 +19,14 @@ spec:
         env:
         - name: MYSQL_ROOT_PASSWORD    #nome da variavel da imagem
           valueFrom:
-						secretKeyRef:
-						  name: my-secret          #nome do serviço secret criado
-							key: ROOT_PASSWORD       #variavel no secret que contem a chave que queremos
+            secretKeyRef:
+              name: my-secret          #nome do serviço secret criado
+              key: ROOT_PASSWORD       #variavel no secret que contem a chave que queremos
         - name: MYSQL_DATABASE
           valueFrom:
-					  secretKeyRef:
-						  name: my-secret          #nome do serviço secret criado
-							key: MYSQL_DATABASE      #variavel no secret que contem a chave que queremos
+            secretKeyRef:
+              name: my-secret          #nome do serviço secret criado
+              key: MYSQL_DATABASE      #variavel no secret que contem a chave que queremos
 
         #sempre baixa a imagem a cada execucao
         #imagePullPolicy: Always           
@@ -38,7 +38,6 @@ spec:
         - name: local
           mountPath: /var/lib/mysql
 
-        volumeMounts:
         - name: script
           mountPath: /docker-entrypoint-initdb.d
 
